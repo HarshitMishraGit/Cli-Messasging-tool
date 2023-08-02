@@ -7,7 +7,13 @@ dependencies-
     
     1. npm install net
 
-Result of v1.0
+## Connection 
+To connect to a chatroom you have to enter the ip:port of that purticular chat room. For now it is only be operating on port 3000. But it can be modified to use
+multiple chat room at a time.We are using **netcat** to connect to the server =>
+    
+    nc <ip_of_server> <port>
+
+## Result of v1.0
 
 Person 1 =>  John 
 
