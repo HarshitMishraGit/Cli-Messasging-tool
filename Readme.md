@@ -17,7 +17,8 @@ multiple chat room at a time.We are using **netcat** to connect to the server =>
 
 Person 1 =>  John 
 
-https://github.com/HarshitMishraGit/Cli-Messasging-tool/assets/93585405/81dbc51e-6af2-4ad9-b646-b05c492261f3
+![ezgif-1-75fdb47b5d](https://github.com/HarshitMishraGit/Cli-Messasging-tool/assets/93585405/6b1056a1-243a-4941-b88c-3a82cb28cb90)
+
 
 Person 2 => Harshit
 
