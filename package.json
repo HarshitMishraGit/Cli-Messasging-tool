@@ -1,11 +1,17 @@
 {
-  "name": "websocketmessage",
+  "name": "cli-chat-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "The CLI tool where you can chat with your friends. Create chat rooms and invite your friends to join.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "type":"module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HarshitMishraGit/Cli-Messasging-tool"
   },
+  "scripts": {
+    "start":"node ."
+  },
+  "bin":"./index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
