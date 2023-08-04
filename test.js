@@ -105,7 +105,7 @@ const AskthePortNumberToCreateServer = (clientSocket, name) => {
         guidelines: ''
       };
        clientSocket.write(`Chat room created on port ${portNumber}. ${name}, You are the admin.\n`);
-       createServer(name, portNumber, clientSocket);
+       createServer(portNumber, clientSocket);
        clientSocket.write("Now enter your chat room with the port, Byee ;)\n")
        clientSocket.end();
       // Rest of your code
@@ -126,6 +126,7 @@ const AskthePortNumberToJoinServer = (clientSocket, name) => {
        return AskthePortNumberToJoinServer(clientSocket, name);
      } else {
     //  join the member to the chat room
+       clientSocket.name = name;
        ChatRooms[portNumber].members[clientSocket.remoteAddress] = clientSocket;
        clientSocket.end();
        clientSocket.write(`${name}, You have successfully joined the chatRoom on port ${portNumber}.\n`);
@@ -235,11 +236,14 @@ const AskthePortNumberToJoinServer = (clientSocket, name) => {
 //     console.log(`Chat room on port ${port} is now active.`);
 //   });
 // };
-const createServer = (name, port, clientSocket) => {
-  const server = net.createServer(socket => {
+const createServer = (port, clientSocket) => {
+  const server = net.createServer((socket) => {
     const room = ChatRooms[port];
     room.members[socket.remoteAddress] = socket;
-
+    socket.write(`Welcome to the server at port ${port}`);
+    // if (room.admin === socket) {
+    //   socket.write(`Admin, Welcome to the chat room on port ${port}.\n`);
+    // }
     socket.on('data', data => {
       const message = `${name}: ${data}`;
       broadcast(message, socket.remoteAddress, room.members);
