@@ -11,77 +11,6 @@ function broadcast(message, senderAddress,members) {
     }
   }
 }
-const joinServer = (name, port) => {
-  const server = net.createServer((clientSocket) => {
-    let name;
-    let room;
-    if (ChatRooms[port].admin) {
-      // add the member
-      ChatRooms[port].members[clientSocket.remoteAddress] = clientSocket;
-    } else {
-      ChatRooms[port].admin[clientSocket.remoteAddress] = clientSocket;
-    }
-    clientSocket.write("Enter your name: ");
-
-    clientSocket.on("data", (data) => {
-      if (!name) {
-        name = data.toString().trim();
-        clients[clientSocket.remoteAddress] = clientSocket;
-        clientSocket.write(`${name}, Welcome to the server! \n`);
-        clientSocket.write("1. Create a chat room\n2. Join a chat room\n");
-      } else {
-        const input = data.toString().trim();
-
-        if (!room) {
-          if (input === "1") {
-            clientSocket.write(
-              "Enter a port number between 4000 and 5000 for your chat room: "
-            );
-            if (Number(input) < 5000 && Number(input) > 4000) {
-              room;
-            }
-          } else if (input === "2") {
-            clientSocket.write(
-              "Enter the port number of the chat room you want to join: "
-            );
-          } else {
-            clientSocket.write("Invalid option. Please select 1 or 2.\n");
-          }
-        } else {
-          const message = `${name}: ${input}`;
-          broadcast(message, clientSocket.remoteAddress, room);
-        }
-      }
-    });
-
-    clientSocket.on("end", () => {
-      if (name) {
-        if (room) {
-          delete room.clients[clientSocket.remoteAddress];
-          broadcast(
-            `${name} has left the chat room.\n`,
-            clientSocket.remoteAddress,
-            room
-          );
-          if (Object.keys(room.clients).length === 0) {
-            delete chatRooms[room.port];
-          }
-        } else {
-          delete clients[clientSocket.remoteAddress];
-        }
-      }
-    });
-
-    clientSocket.on("error", (err) => {
-      console.error(`Client error: ${err}`);
-    });
-  });
-
-  server.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
-};
-const NotifyOfJoiningNewMember = (clientSocket) => { }
 
 const AskthePortNumberToCreateServer = (clientSocket, name) => { 
   // Listen for user input
@@ -138,106 +67,6 @@ const AskthePortNumberToJoinServer = (clientSocket, name) => {
    });
 }
 
-// const createServer = (port, clientSocket) => {
-//   const server = net.createServer(socket => {
-//     const room = ChatRooms[port];
-//     // check if the user is already a member of the chat room
-//     // if (!room.members[socket.remoteAddress]) {
-//     //   // ask for the name 
-//     //   socket.write("Enter your name: ");
-//     //   // add the member
-//     //   socket.once('data', data => {
-//     //     const name = data.toString().trim();
-//     //     socket.write(`${name}, Welcome to the chat room on port ${port}.\n}`);
-//     //     socket.name= name;
-//     //   });
-//     //   room.members[socket.remoteAddress] = socket;
-//     // }
-//     //  else {
-//     //   socket.on('data', data => {
-//     //     if (data.toString().trim() === 'exit') {
-//     //       socket.end();
-//     //     }
-//     //     else if (data.toString().trim() === 'list') {
-//     //       socket.write(`Members of the chat room on port ${port}:\n`);
-//     //       for (const address in ChatRooms[port].members) {
-//     //         socket.write(`${ChatRooms[port].members[address].name}\n`);
-//     //       }
-//     //     } else if (data.toString().trim() === 'block' && ChatRooms[port].admin === socket) {
-//     //       socket.write("Enter the name of the member you want to block: ");
-//     //       socket.once('data', data => {
-//     //         const name = data.toString().trim();
-//     //         const member = ChatRooms[port].members[name];
-//     //         if (member) {
-//     //           ChatRooms[port].blockedMembers[member.remoteAddress] = member;
-//     //           delete ChatRooms[port].members[member.remoteAddress];
-//     //           socket.write(`${name} has been blocked.\n`);
-//     //         } else {
-//     //           socket.write(`${name} is not a member of the chat room.\n`);
-//     //         }
-//     //       });
-//     //     } else if (data.toString().trim() === 'unblock' && ChatRooms[port].admin === socket) {
-//     //       socket.write("Enter the name of the member you want to unblock: ");
-//     //       socket.once('data', data => {
-//     //         const name = data.toString().trim();
-//     //         const member = ChatRooms[port].blockedMembers[name];
-//     //         if (member) {
-//     //           ChatRooms[port].members[member.remoteAddress] = member;
-//     //           delete ChatRooms[port].blockedMembers[member.remoteAddress];
-//     //           socket.write(`${name} has been unblocked.\n`);
-//     //         } else {
-//     //           socket.write(`${name} is not a blocked member of the chat room.\n`);
-//     //         }
-//     //       });
-//     //     } else if (data.toString().trim() === '/guidelines' && ChatRooms[port].admin === socket) {
-//     //       socket.write("Enter the guidelines for the chat room: ");
-//     //       socket.once('data', data => {
-//     //         ChatRooms[port].guidelines = data.toString().trim();
-//     //         socket.write(`Guidelines for the chat room on port ${port}:\n${ChatRooms[port].guidelines}\n`);
-//     //       });
-//     //     } else if (data.toString().trim() === '/guidelines') {
-//     //       socket.write(`Guidelines for the chat room on port ${port}:\n${ChatRooms[port].guidelines}\n`);
-//     //     } else if (socket.name) {
-//     //       const message = `${socket.name}: ${data}`;
-//     //       broadcast(message, socket.remoteAddress, ChatRooms[port].members);
-//     //     }
-//     //     // end the chat room
-//     //     else if (data.toString().trim() === 'end' && ChatRooms[port].admin === socket) {
-//     //       socket.write("Are you sure you want to end the chat room? (y/n): ");
-//     //       socket.once('data', data => {
-//     //         if (data.toString().trim() === 'y') {
-//     //           socket.write(`Chat room on port ${port} has been ended.\n`);
-//     //           for (const address in ChatRooms[port].members) {
-//     //             ChatRooms[port].members[address].write(`Chat room on port ${port} has been ended.\n`);
-//     //             ChatRooms[port].members[address].end();
-//     //           }
-//     //           delete ChatRooms[port];
-//     //         } else {
-//     //           socket.write(`Chat room on port ${port} has not been ended.\n`);
-//     //         }
-//     //       });
-//     //     }
-  
-        
-      
-//     //   });
-//     // }
-
-  
-
-//     socket.on('end', () => {
-//       delete room.members[socket.remoteAddress];
-//     });
-
-//     socket.on('error', err => {
-//       console.error(`Client error: ${err}`);
-//     });
-//   });
-
-//   server.listen(port, () => {
-//     console.log(`Chat room on port ${port} is now active.`);
-//   });
-// };
 const createServer = (port, clientSocket) => {
   const server = net.createServer((socket) => {
     const room = ChatRooms[port];
@@ -308,11 +137,36 @@ const createServer = (port, clientSocket) => {
                 if (user) {
                   for (const address in members) {
                     if (members[address].name == user) {
-                      ChatRooms[port].blockedMembers[address] = {address:address};
+                      ChatRooms[port].blockedMembers[address] = {address:address,name:members[address].name};
                       members[address].write(`You have been kicked from the chat room on port ${port}.\n`);
                       members[address].end();
                       delete members[address];
                       socket.write(`${user} has been blocked from the chat room on port ${port}.\n`);
+                      break;
+                    }
+                  }
+                }
+          }
+          // 3. List blocked users
+          else if (data.toString().trim().startsWith('/list-blocked')) {
+            var table = new AsciiTable('Blocked Users');
+            table.setHeading('S.No','Name', 'Address');
+            let i = 1;
+            for (const address in ChatRooms[port].blockedMembers) {
+              table.addRow(i++, ChatRooms[port].blockedMembers[address].name, ChatRooms[port].blockedMembers[address].address);
+            }
+            socket.write(table.toString()+"\n");
+          }
+          // 4. Unblock a user
+          else if (data.toString().trim().startsWith('/unblock')) {
+            let user = data.toString().trim().split(' ')[1].trim();
+            let members = ChatRooms[port].blockedMembers;
+                if (user) {
+                  for (const address in members) {
+                    if (members[address].name == user) {
+                      // delete from the blocked members
+                      delete ChatRooms[port].blockedMembers[address];
+                      socket.write(`${user} has been unblocked from the chat room on port ${port}.\n`);
                       break;
                     }
                   }
