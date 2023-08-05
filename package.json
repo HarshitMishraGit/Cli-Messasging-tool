@@ -3,19 +3,21 @@
   "version": "1.0.0",
   "description": "The CLI tool where you can chat with your friends. Create chat rooms and invite your friends to join.",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/HarshitMishraGit/Cli-Messasging-tool"
   },
   "scripts": {
-    "start":"node ."
+    "start": "node ."
   },
-  "bin":"./index.js",
+  "bin": "./index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ascii-art": "^2.8.5",
+    "ascii-table": "^0.0.9",
     "net": "^1.0.2"
   }
 }

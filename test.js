@@ -1,13 +1,13 @@
 import net from "net";
-
-const ports = new Set();
+import art from "ascii-art";
+import AsciiTable from 'ascii-table';
 const ChatRooms = {};
 // const ChatRooms={3001:{admin:{},members:{},blockedMembers:{},guidlines:'string'}}
 
 function broadcast(message, senderAddress,members) {
   for (const address in members) {
     if (address !== senderAddress) {
-      clients[address].write(message);
+      members[address].write(message);
     }
   }
 }
@@ -240,13 +240,37 @@ const createServer = (port, clientSocket) => {
   const server = net.createServer((socket) => {
     const room = ChatRooms[port];
     room.members[socket.remoteAddress] = socket;
-    socket.write(`Welcome to the server at port ${port}`);
-    // if (room.admin === socket) {
-    //   socket.write(`Admin, Welcome to the chat room on port ${port}.\n`);
-    // }
+    socket.write(`===================Welcome to the server at port ${port}================================\n\n\n`);
+    // console.log("the chatRoom Admin is :",room.admin.name);
+    // check the address if admin or not
+    if (room.admin == socket.address) {
+      socket.write(`Hello ${room.admin.name}, You are the admin of the chat room on port ${port}.\n`);
+    }
+    // check if the address is blocked or not
+    else if (socket.address == room.blockedMembers[socket.remoteAddress]) {
+      socket.write(`You are blocked from the chat room on port ${port}.\n`);
+    }
+    // check if the address is a member or not
+    else if (socket.address == room.members[socket.remoteAddress]) {
+      socket.write(`Hello ${socket.name}, You are a member of the chat room on port ${port}.\n`);
+    }
+    // check if the address is a guest or not
+    else {
+      socket.write(`Hello guest, You are a guest of the chat room on port ${port}.\n`);
+      socket.write("Enter your name: ");
+      socket.once('data', data => {
+        const name = data.toString().trim();
+        socket.name = name;
+        socket.write(`${name}, Welcome to the server! \n`);
+        socket.write(`Guidelines for the chat room on port ${port}:\n${room.guidelines}\n`);
+        room.members[socket.remoteAddress] = socket;
+      });
+    }
     socket.on('data', data => {
-      const message = `${name}: ${data}`;
-      broadcast(message, socket.remoteAddress, room.members);
+      if (socket.name) {
+        const message = `${socket.name}: ${data}`;
+        broadcast(message, socket.remoteAddress, room.members);
+      }
     });
 
     socket.on('end', () => {
@@ -266,7 +290,7 @@ const createServer = (port, clientSocket) => {
 const server = net.createServer((clientSocket) => {
 let name;
 let selectedPort;
-let choiceSelected=false;
+let choiceSelected = false;
   clientSocket.write("Enter your name: ");
 
   clientSocket.on("data", (data) => {
@@ -292,9 +316,12 @@ let choiceSelected=false;
         clientSocket.write("Invalid option. Please select 1 or 2.\n");
       }
     } else if (data.toString().trim() === "/active") { 
-      for(const port in ChatRooms) {
-        clientSocket.write(`Chat room on port ${port} is active.\n`);
+      var table = new AsciiTable('Chat Rooms');
+      table.setHeading('Port', 'Admin', 'Members');
+      for (const port in ChatRooms) {
+        table.addRow(port, ChatRooms[port].admin.name, Object.keys(ChatRooms[port].members).length);
       }
+      clientSocket.write(table.toString() + "\n");
     }
     else {
       const message = `${name}: ${data}`;
