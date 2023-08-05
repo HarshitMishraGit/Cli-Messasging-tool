@@ -99,14 +99,16 @@ const AskthePortNumberToCreateServer = (clientSocket, name) => {
      } else {
       // Create the chat room and set the admin
       ChatRooms[portNumber] = {
-        admin: clientSocket,
+        admin: {address:clientSocket.address().address,name:name},
         members: {},
         blockedMembers: {},
         guidelines: ''
-      };
+       };
+      //  console.log("Admin is created =>", clientSocket.address().address);
        clientSocket.write(`Chat room created on port ${portNumber}. ${name}, You are the admin.\n`);
        createServer(portNumber, clientSocket);
        clientSocket.write("Now enter your chat room with the port, Byee ;)\n")
+       
        clientSocket.end();
       // Rest of your code
     }
@@ -239,19 +241,49 @@ const AskthePortNumberToJoinServer = (clientSocket, name) => {
 const createServer = (port, clientSocket) => {
   const server = net.createServer((socket) => {
     const room = ChatRooms[port];
-    room.members[socket.remoteAddress] = socket;
+    ChatRooms[port].members[socket.remoteAddress] = socket;
+
     socket.write(`===================Welcome to the server at port ${port}================================\n\n\n`);
-    // console.log("the chatRoom Admin is :",room.admin.name);
+    socket.on('data', data => {
+      if (socket.name) {
+        
+        if (data.toString().trim() === 'exit') {
+          socket.write(`You have left the chat`);
+          socket.end();
+        } else if (data.toString().trim() === '/list') {
+          var table = new AsciiTable('Group Info.');
+          table.setHeading('S.No','Name', 'Address','designation');
+          let i = 1;
+          table.addRow(i++,ChatRooms[port].admin.name,'-Admin-')
+          for (const address in ChatRooms[port].members) {
+            table.addRow(i++, ChatRooms[port].members[address].name, address);
+          }
+          socket.write(table.toString()+"\n");
+        
+        } else if (socket.address().address != ChatRooms[port].admin.address) {
+          // a member
+        const message = `${socket.name}: ${data}`;
+          broadcast(message, socket.remoteAddress, ChatRooms[port].members);
+          
+        }else if(socket.address().address == ChatRooms[port].admin.address){
+          // admin
+          const message = `${art.style('[ADMIN] '+ socket.name,'Yellow',true)}: ${data}`;
+          broadcast(message, socket.remoteAddress, ChatRooms[port].members);
+        }
+      }
+    });
     // check the address if admin or not
-    if (room.admin == socket.address) {
-      socket.write(`Hello ${room.admin.name}, You are the admin of the chat room on port ${port}.\n`);
+    if (ChatRooms[port].admin.address == socket.address().address) {
+      socket.write(`Hello ${ChatRooms[port].admin.name}, You are the admin of the chat room on port ${port}.\n`);
+      socket.name=ChatRooms[port].admin.name;
+      // add it to the member 
     }
     // check if the address is blocked or not
-    else if (socket.address == room.blockedMembers[socket.remoteAddress]) {
+    else if (socket.address == ChatRooms[port].blockedMembers[socket.remoteAddress]) {
       socket.write(`You are blocked from the chat room on port ${port}.\n`);
     }
     // check if the address is a member or not
-    else if (socket.address == room.members[socket.remoteAddress]) {
+    else if (socket.address == ChatRooms[port].members[socket.remoteAddress]) {
       socket.write(`Hello ${socket.name}, You are a member of the chat room on port ${port}.\n`);
     }
     // check if the address is a guest or not
@@ -262,19 +294,16 @@ const createServer = (port, clientSocket) => {
         const name = data.toString().trim();
         socket.name = name;
         socket.write(`${name}, Welcome to the server! \n`);
-        socket.write(`Guidelines for the chat room on port ${port}:\n${room.guidelines}\n`);
-        room.members[socket.remoteAddress] = socket;
+        socket.write(`Guidelines for the chat room on port ${port}:\n${ChatRooms[port].guidelines}\n`);
+        ChatRooms[port].members[socket.remoteAddress] = socket;
+        // console.log("New member joined =>", socket._peername.address);
+        console.log("New member joined =>", socket.address().address);
       });
     }
-    socket.on('data', data => {
-      if (socket.name) {
-        const message = `${socket.name}: ${data}`;
-        broadcast(message, socket.remoteAddress, room.members);
-      }
-    });
+    
 
     socket.on('end', () => {
-      delete room.members[socket.remoteAddress];
+      delete ChatRooms[port].members[socket.remoteAddress];
     });
 
     socket.on('error', err => {
@@ -292,10 +321,10 @@ let name;
 let selectedPort;
 let choiceSelected = false;
   clientSocket.write("Enter your name: ");
-
+  // console.log("Someone is ping the server =>", clientSocket.address().address);
   clientSocket.on("data", (data) => {
 
-    if (!name && data.toString().trim()!="/active") {
+    if (!name && data.toString().trim()!="/active" && data.toString().trim()!="/admins") {
       name = data.toString().trim();
       clientSocket.name = name;
       clientSocket.write(`${name}, Welcome to the server! \n`);
@@ -316,10 +345,19 @@ let choiceSelected = false;
         clientSocket.write("Invalid option. Please select 1 or 2.\n");
       }
     } else if (data.toString().trim() === "/active") { 
-      var table = new AsciiTable('Chat Rooms');
+      let table = new AsciiTable('Chat Rooms');
       table.setHeading('Port', 'Admin', 'Members');
       for (const port in ChatRooms) {
         table.addRow(port, ChatRooms[port].admin.name, Object.keys(ChatRooms[port].members).length);
+      }
+      clientSocket.write(table.toString() + "\n");
+    }
+    else if (data.toString().trim() === "/admins") { 
+      let table = new AsciiTable('Chat Room Admins');
+      table.setHeading('Port', 'Admin', 'Address');
+      for (const port in ChatRooms) {
+        // table.addRow(port, ChatRooms[port].admin.name,JSON.stringify( ChatRooms[port].admin));
+      console.log("adminName=> ",ChatRooms[port].admin.name," Address=> ",ChatRooms[port].admin);
       }
       clientSocket.write(table.toString() + "\n");
     }
