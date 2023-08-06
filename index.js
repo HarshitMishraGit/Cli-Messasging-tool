@@ -3,6 +3,7 @@ import net from "net";
 import art from "ascii-art";
 import AsciiTable from 'ascii-table';
 import Image from 'ascii-art-image';
+import {exec} from 'child_process';
 import fs from 'fs';
 const ChatRooms = {};
 // const ChatRooms={3001:{admin:{},members:{},blockedMembers:{},guidlines:'string'}}
@@ -139,17 +140,43 @@ const createServer = (port, clientSocket) => {
           socket.write(table.toString() + "\n");
         
         } else if (data.toString().trim().startsWith('/sendImage')) { 
-          try {
-            let path = data.toString().trim().split('"')[1].trim();
-            if (path) {
-              console.log("path is =>", path);
-              sendImage(socket, port, path);
+          // try {
+          //   let path = data.toString().trim().split('"')[1].trim();
+          //   if (path) {
+          //     console.log("path is =>", path);
+          //     sendImage(socket, port, path);
+          //   }
+          // } catch (error) {
+          //   socket.write("Something went wrong\n");   
+          // }
+          // const imagePath = data.toString().trim().substring(10).trim(); 
+          //   // Read the image file and send it to the server
+          // const imageBuffer = fs.readFileSync(imagePath);
+          // const imageInfo = path.parse(imagePath);
+          // const imageName = generateUniqueImageName(imageInfo.base);
+          // clientSocket.write(`/upload/${imageName}`); // Send the image path to the server
+
+          //       // Save the image in the /upload directory with a unique name
+          // fs.writeFileSync(`./upload/${imageName}`, imageBuffer);
+          // execute a command on the client terminal
+          // exec(`cd $Home/Downloads`);
+          // // console.log the list of files name in the directory
+          // exec(`ls -a`, (err, stdout, stderr) => {
+          //   if (err) {
+          //     console.log(err);
+          //   } else {
+          //     console.log(stdout);
+          //   }
+          // });
+          // go to the donwload directory and get all the files name and save it a txt file
+          exec(`dir`, (err, stdout, stderr) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(stdout);
             }
-          } catch (error) {
-            socket.write("Something went wrong\n");   
           }
-         
-          
+          );
         }
 
         // =============================== Admin Previllages =================================
