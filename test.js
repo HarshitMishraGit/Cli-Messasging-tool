@@ -1,51 +1,44 @@
-// import net from 'net';
+const express = require('express');
+const formidable = require('formidable');
+const path = require('path');
+const fs = require('fs');
 
-// const clients = {};
+const app = express();
+const port = 3001;
 
-// function broadcast(message, senderAddress) {
-//   for (const address in clients) {
-//     if (address !== senderAddress) {
-//       clients[address].write(message);
-//     }
-//   }
-// }
+// Set up static files and Tailwind CSS
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
 
-// const server = net.createServer(clientSocket => {
-//   let name;
+// Serve the upload form
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
-//   clientSocket.write('Enter your name: ');
+// Handle form submission
+app.post('/upload', (req, res) => {
+  const form = new formidable.IncomingForm();
+  form.uploadDir = path.join(__dirname, 'uploads');
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('An error occurred');
+    }
 
-//   clientSocket.on('data', data => {
-//     if (!name) {
-//       name = data.toString().trim();
-//       clients[clientSocket.remoteAddress] = clientSocket;
-//       clientSocket.write(`${name}, Welcome to the server! \n`);
-//     //   broadcast(`${name} has joined the chat!\n`, clientSocket.remoteAddress);
-//         for (const address in clients) {
-//             if (address !== clientSocket.remoteAddress) {
-//               clients[address].write(`${name} has joined the chat!\n`);
-//             }
-//         }
-//     } else {
-//       const message = `${name}: ${data}`;
-//       broadcast(message, clientSocket.remoteAddress);
-//     }
-    
-//   });
+    var oldPath = files.file[0].filepath;
+    var newPath = path.join(form.uploadDir, files.file[0].originalFilename);
 
-//   clientSocket.on('end', () => {
-//     if (name) {
-//       delete clients[clientSocket.remoteAddress];
-//       broadcast(`${name} has left the chat.\n`, clientSocket.remoteAddress);
-//     }
-//   });
+    fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('An error occurred');
+      }
+        res.send('File uploaded successfully');
+    });
 
-//   clientSocket.on('error', err => {
-//     console.error(`Client error: ${err}`);
-//   });
-// });
+  });
+});
 
-// const port = 3000;
-// server.listen(port, () => {
-//   console.log(`Server listening on port ${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
