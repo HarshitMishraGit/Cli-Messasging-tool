@@ -7,12 +7,18 @@ const app = express();
 const port = 3001;
 
 // Set up static files and Tailwind CSS
+app.use(express.json());
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+
+// Set up view engine and views folder
+// app.set('view engine', 'ejs');
+// app.set('views', path.join(__dirname, 'views'));
 
 // Serve the upload form
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+//   res.render('index',{name:"harshitMishra"});
 });
 
 // Handle form submission
