@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+  <title>Link Display</title>
+  <style>
+    body {
+      background-color: #f7fafc;
+    }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen">
+  <div class="max-w-md p-8 bg-white shadow-md rounded-md">
+    <% if (path) { %>
+      <h2 class="text-2xl font-semibold mb-4">Uploaded Link</h2>
+      <p class="mb-2"><%= path %></p>
+      <button id="copyButton" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded-md">Copy Link</button>
+    <% } else { %>
+      <p class="text-gray-600">No link available.</p>
+    <% } %>
+  </div>
+
+  <script>
+    document.getElementById('copyButton').addEventListener('click', () => {
+      const pathElement = document.querySelector('.mb-2');
+      const path = pathElement.textContent;
+      const dummyInput = document.createElement('input');
+      document.body.appendChild(dummyInput);
+      dummyInput.value = path;
+      dummyInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummyInput);
+      alert('Copied to clipboard: ' + path);
+    });
+  </script>
+</body>
+</html>

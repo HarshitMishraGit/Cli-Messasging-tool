@@ -12,7 +12,7 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
 // Set up view engine and views folder
-// app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 // app.set('views', path.join(__dirname, 'views'));
 
 // Serve the upload form
@@ -39,7 +39,8 @@ app.post('/upload', (req, res) => {
         console.error(err);
         return res.status(500).send('An error occurred');
       }
-        res.send('File uploaded successfully');
+        // res.send('File uploaded successfully');
+      res.render('result', { path: newPath });
     });
 
   });

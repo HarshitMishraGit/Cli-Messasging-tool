@@ -1,10 +1,9 @@
 
-import net from "net";
-import art from "ascii-art";
-import AsciiTable from 'ascii-table';
-import Image from 'ascii-art-image';
-import {exec} from 'child_process';
-import fs from 'fs';
+const net = require("net");
+const art = require('ascii-art');
+const  AsciiTable =require( 'ascii-table');
+const Image =require( 'ascii-art-image');
+
 const ChatRooms = {};
 // const ChatRooms={3001:{admin:{},members:{},blockedMembers:{},guidlines:'string'}}
 
