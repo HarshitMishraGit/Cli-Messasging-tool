@@ -6,8 +6,12 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
   <title>File Upload Form</title>
 </head>
-<body class="flex justify-center items-center min-h-screen bg-gray-100">
-  <div class="max-w-md p-8 bg-white shadow-md rounded-md">
+<body class="flex flex-col justify-center items-center min-h-screen  bg-gray-100">
+  <div class="flex flex-row justify-center items-center mb-12 -mt-32">
+    <img src="./25540-removebg-preview.png" alt="Icon" class="w-14">
+    <h2 class="text-2xl font-semibold text-blue-600">CLI Chat App</h2>
+  </div>
+  <div class=" p-8 bg-white shadow-md rounded-md">
     <h2 class="text-2xl font-semibold mb-4">Upload a File</h2>
     <form action="/upload" method="post" enctype="multipart/form-data">
       <div class="mb-4">
