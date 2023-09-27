@@ -62,9 +62,9 @@ const AskthePortNumberToJoinServer = (clientSocket, name) => {
     //  join the member to the chat room
        clientSocket.name = name;
        ChatRooms[portNumber].members[clientSocket.remoteAddress] = clientSocket;
-       clientSocket.end();
-       clientSocket.write(`${name}, You have successfully joined the chatRoom on port ${portNumber}.\n`);
-      //  createServer(name, portNumber, clientSocket);
+      //  ChatRooms[portNumber].members[clientSocket.remoteAddress].name = name;
+      clientSocket.write(`${name}, You have successfully joined the chatRoom on port ${portNumber}.\n`);
+      clientSocket.end();
 
     }
    });
@@ -104,6 +104,7 @@ const createServer = (port, clientSocket) => {
     socket.write(`===================Welcome to the server at port ${port}================================\n\n\n`);
     socket.write(`type /help to get the list of commands\n\n\n`);
     socket.on('data', data => {
+      
       if (socket.name && !data.toString().trim().startsWith('/') && !data.toString().trim().startsWith('\\')) {
         
     
@@ -235,12 +236,16 @@ const createServer = (port, clientSocket) => {
                 }
                 // delete ChatRooms[port];
                 server.close();
+                socket.end();
+                delete ChatRooms[port];
+
               } else {
                 socket.write("Server is not stopped\n");
               }
             });
           }
         }
+        
       }
     });
     // check the address if admin or not
@@ -257,6 +262,7 @@ const createServer = (port, clientSocket) => {
     }
     // check if the address is a member or not
     else if (ChatRooms[port].members[socket.remoteAddress]) {
+
       socket.write(`Hello ${socket.name}, You are a member of the chat room on port ${port}.\n`);
       ChatRooms[port].members[socket.remoteAddress] = socket;
     }
