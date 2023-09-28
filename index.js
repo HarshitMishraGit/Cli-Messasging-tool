@@ -135,7 +135,7 @@ const createServer = (port, clientSocket) => {
             socket.end();
           } else if (data.toString()?.trim() === '/list') {
             var table = new AsciiTable('Group Info.');
-            table.setHeading('S.No', 'Name', 'Address', 'designation','ID');
+            table.setHeading('S.No', 'Name', 'Address','ID');
             let i = 1;
             table.addRow(i++, ChatRooms[port].admin.name, '-Admin-', '-Admin-')
             for (const address in ChatRooms[port].members) {
@@ -148,7 +148,9 @@ const createServer = (port, clientSocket) => {
           
           } else if (data.toString()?.trim().startsWith('/sendImage')) {
             try {
-              let path = data.toString()?.trim().split('"')[1].trim();
+              let path = data.toString()?.trim().split(' ')[1].trim();
+              // remove any " " or ' ' from path
+              path = path.replace(/['"]+/g, '');
               if (path) {
                 console.log("path is =>", path);
                 sendImage(socket, port, path);
@@ -181,7 +183,7 @@ const createServer = (port, clientSocket) => {
             
             // 1. Kick a user
             if (data.toString()?.trim().startsWith('/kick')) {
-              let user = data.toString()?.trim().split(' ')[1].trim();
+              let user = data.toString()?.trim().split(' ')[1]?.trim();
               let members = ChatRooms[port].members;
               if (user) {
                 for (const address in members) {
@@ -197,7 +199,7 @@ const createServer = (port, clientSocket) => {
             }
             // 2. Block a user
             else if (data.toString()?.trim().startsWith('/block')) {
-              let user = data.toString()?.trim().split(' ')[1].trim();
+              let user = data.toString()?.trim().split(' ')[1]?.trim();
               let members = ChatRooms[port].members;
               if (user) {
                 for (const address in members) {
@@ -224,7 +226,7 @@ const createServer = (port, clientSocket) => {
             }
             // 4. Unblock a user
             else if (data.toString()?.trim().startsWith('/unblock')) {
-              let user = data.toString()?.trim().split(' ')[1].trim();
+              let user = data.toString()?.trim().split(' ')[1]?.trim();
               let members = ChatRooms[port].blockedMembers;
               if (user) {
                 for (const address in members) {
@@ -281,17 +283,21 @@ const createServer = (port, clientSocket) => {
         ChatRooms[port].members[socket.remoteAddress] = socket;
       }
       // check if the address is a guest or not
-      else {
+      else if(!socket.name) {
         socket.write(`Hello guest, You are a guest of the chat room on port ${port}.\n`);
         socket.write("Enter your name: ");
         socket.once('data', data => {
-          const name = data.toString()?.trim();
-          socket.name = name;
-          socket.id = generateRandomID(name);
-          socket.write(`${name}, Welcome to the server! \n`);
-          socket.write(`Guidelines for the chat room on port ${port}:\n${ChatRooms[port].guidelines}\n`);
-          ChatRooms[port].members[socket.remoteAddress] = socket;
-  
+          if (data.toString()?.trim() == '') { 
+            socket.write("!!! Please enter your name first !!!\n");
+          } else {
+            const name = data.toString()?.trim();
+            socket.name = name;
+            socket.id = generateRandomID(name);
+            socket.write(`${name}, Welcome to the server! \n`);
+            socket.write(`Guidelines for the chat room on port ${port}:\n${ChatRooms[port].guidelines}\n`);
+            ChatRooms[port].members[socket.remoteAddress] = socket;
+    
+          }
           // console.log("New member joined =>", socket._peername.address);
           // console.log("New member joined =>", socket.address().address);
         });

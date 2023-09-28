@@ -8,7 +8,7 @@
     "url": "https://github.com/HarshitMishraGit/Cli-Messasging-tool"
   },
   "scripts": {
-    "start": "nodemon ."
+    "start": "pm2 start index.js --name 'cli-chat-app'"
   },
   "bin": "./index.js",
   "keywords": [],

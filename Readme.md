@@ -24,4 +24,22 @@ Person 2 => Harshit
 
 ![WhatsApp Image 2023-08-03 at 03 45 32](https://github.com/HarshitMishraGit/Cli-Messasging-tool/assets/93585405/2e03a6fa-98e1-4659-a618-05c0b0a28d4a)
 
+# Send Image as stickers In Terminal
+You can directly send the image in the terminal with `/sendImage path-of-image` command.
+But First you need to upload the image that can be done with http://< serverUrl >:3001 and it will give you a link back .
 
+send it within the chatRoom with command `/sendImage  Copied-Link-of-uploaded-Image'`
+
+# Run with Docker 
+
+1. Pull the image from docker 
+    
+        docker pull harshitmishragit/cli-chat-app:0.0.1
+
+
+    
+2. Run the container 
+
+        docker run -d -p 3000-3001:3000-3001 -p 4000-4050:4000-4010 harshitmishragit/cli-chat-app:0.0.1 
+
+You can modify the maximum connections by modifying port 4000-4050 to any number .For now Max Connections are 50
