@@ -12,24 +12,46 @@
   </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen">
-  <div class="flex flex-row justify-center items-center mb-12 -mt-32">
+  <div class="flex flex-row justify-center items-center mb-12 -mt-32 cursor-pointer" onclick="window.location=`/`">
     <img src="./25540-removebg-preview.png" alt="Icon" class="w-14">
     <h2 class="text-2xl font-semibold text-blue-600">CLI Chat App</h2>
   </div>
   <div class=" p-8 bg-white shadow-md rounded-md">
     <% if (path) { %>
       <h2 class="text-2xl font-semibold mb-4">Uploaded Link</h2>
-      <p class="mb-2"><%= path %></p>
+      <p class="mb-2 path"><%= path %></p>
       <button id="copyButton" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded-md">Copy Link</button>
+    <% } else { %>
+      <p class="text-gray-600">No link available.</p>
+    <% } %>
+    <% if (url) { %>
+      <h2 class="text-2xl font-semibold mb-4">Sharing URL</h2>
+      <p class="hidden url"><%= url %></p>
+      <a class="mb-2 sharingUrl hover:underline cursor-pointer text-blue-400" ><%=  %></a>
+      <button id="copyButtonUrl" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded-md">Copy Link</button>
     <% } else { %>
       <p class="text-gray-600">No link available.</p>
     <% } %>
   </div>
 
   <script>
+    const url = document.querySelector('.url').textContent;
+    // update the sharing url's href
+    document.querySelector('.sharingUrl').setAttribute('href',`${window.location}s/${url}`);
+    document.querySelector('.sharingUrl').innerHTML=`${window.location}s/${url}`;
     document.getElementById('copyButton').addEventListener('click', () => {
-      const pathElement = document.querySelector('.mb-2');
+      const pathElement = document.querySelector('.path');
       const path = pathElement.textContent;
+      const dummyInput = document.createElement('input');
+      document.body.appendChild(dummyInput);
+      dummyInput.value = path;
+      dummyInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummyInput);
+      alert('Copied to clipboard: ' + path);
+    });
+    document.getElementById('copyButtonUrl').addEventListener('click', () => {
+      const path= `${window.location}s/${url}`;
       const dummyInput = document.createElement('input');
       document.body.appendChild(dummyInput);
       dummyInput.value = path;
