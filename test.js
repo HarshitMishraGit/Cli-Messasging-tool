@@ -45,7 +45,7 @@ app.post('/upload', (req, res) => {
 
   });
 });
-
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+module.exports = app; // Export the Express app
+// app.listen(port, () => {
+//   console.log(`Server listening on port ${port}`);
+// });
