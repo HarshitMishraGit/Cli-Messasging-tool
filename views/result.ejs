@@ -27,7 +27,11 @@
     <% if (url) { %>
       <h2 class="text-2xl font-semibold mb-4">Sharing URL</h2>
       <p class="hidden url"><%= url %></p>
-      <a class="mb-2 sharingUrl hover:underline cursor-pointer text-blue-400" ><%=  %></a>
+      <div class="flex flex-row gap-1 w-full justify-start items-center">
+
+        <a class="mb-2 sharingUrl hover:underline cursor-pointer text-blue-400" target="_blank"><%=  %></a>
+        <img src="./expand.png" alt="Icon" class="w-4 h-4">
+      </div>
       <button id="copyButtonUrl" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded-md">Copy Link</button>
     <% } else { %>
       <p class="text-gray-600">No link available.</p>
