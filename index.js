@@ -148,7 +148,8 @@ const createServer = (port, clientSocket) => {
           
           } else if (data.toString()?.trim().startsWith('/sendImage')) {
             try {
-              let path = data.toString()?.trim().split(' ')[1].trim();
+              let path = data.toString()?.trim();
+              path = path.substring(10)?.trim();
               // remove any " " or ' ' from path
               path = path.replace(/['"]+/g, '');
               if (path) {
