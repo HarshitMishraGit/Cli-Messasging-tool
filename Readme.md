@@ -30,6 +30,6 @@ But First you need to upload the image that can be done with http://< serverUrl 
 
 send it within the chatRoom with command `/sendImage  Copied-Link-of-uploaded-Image'`
 
-#Send The CDN URl of the file
+# Send The CDN URL of the file
 The server at http://< serverUrl >:3001 gives you two type of links in after uploading the file. If the file is image you can either send it in chat(as Sticker) or You can send the original file url to anyone in the chatRoom. File can be Pdf,video,audio,image ...etc. 
 
