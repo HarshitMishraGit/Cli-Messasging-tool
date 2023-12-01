@@ -28,6 +28,7 @@ Person 2 => Harshit
 You can directly send the image in the terminal with `/sendImage path-of-image` command.
 But First you need to upload the image that can be done with http://< serverUrl >:3001 and it will give you a link back .
 
+
 send it within the chatRoom with command `/sendImage  Copied-Link-of-uploaded-Image'`
 
 # Send The CDN URL of the file
